@@ -3,6 +3,7 @@ require_relative 'lib/player'
 require_relative 'lib/display'
 require_relative 'lib/human'
 require_relative 'lib/ai'
+require_relative 'lib/rules'
 
 
 class TicTacToe
@@ -13,7 +14,7 @@ class TicTacToe
     @display = Display.new
 
     #create the board
-    @board = Board.new(@display)
+    @board = Board.new
 
     @display.startup_screen
 
@@ -21,35 +22,32 @@ class TicTacToe
     @player_X = set_player_to_human_or_computer(:x)
     @player_O = set_player_to_human_or_computer(:o)
 
-    # set player x as the starting player
-    @current_player = @player_X
-    @current_opponent = @player_O
+    #initialize the rules
+    @rules = Rules.new(@player_X, @player_O)
   end
 
   def play
 
+    #set first player
+    @rules.current_player = @player_X
+
     #display the starting board
     @display.render_board(@board)
 
-    #loop to play the game
-    while true
+    #loop to play the game until game over is true
+    until @rules.game_over?(@board) do
       #current player makes a move
-      @display.announce_players_turn(@current_player)
-      @current_player.move(@board)
+      @display.announce_players_turn(@rules.current_player)
+
+
+      @rules.take_turn(@board)
 
       #display the board
       @display.render_board(@board)
-
-      #check if game is over, if not then switch players and start a new turn
-      @board.game_over?? break : next_player
     end
 
-    @display.game_over_message(@board)
+    @display.game_over_message(@rules, @board)
 
-  end
-
-  def next_player
-    @current_player, @current_opponent = @current_opponent, @current_player
   end
 
   def set_player_to_human_or_computer(marker)
@@ -68,6 +66,8 @@ class TicTacToe
   def valid_y_n_response?(response)
     ['y','n'].include?(response)
   end
+
+  private :set_player_to_human_or_computer
 
 end
 

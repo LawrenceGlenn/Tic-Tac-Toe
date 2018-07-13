@@ -7,7 +7,7 @@ class Player
     @display = disp
   end
 
-  def move(board)
+  def get_move(board, rules)
     raise 'No User'
   end
 end
